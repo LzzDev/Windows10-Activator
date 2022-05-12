@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <Windows.h>
+
 
 std::map<std::string, std::string> keys {
     {"Home", "TX9XD-98N7V-6WMQ6-BX7FG-H8Q99"},
@@ -15,10 +17,34 @@ std::map<std::string, std::string> keys {
     {"Enterprise N", "DPH2V-TTNVB-4X9Q3-TJR4H-KHJW4"},
 };
 
+// Credit: https://stackoverflow.com/a/8196291
+BOOL IsElevated() {
+    BOOL fRet = FALSE;
+    HANDLE hToken = NULL;
+    if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) {
+        TOKEN_ELEVATION Elevation;
+        DWORD cbSize = sizeof(TOKEN_ELEVATION);
+        if (GetTokenInformation(hToken, TokenElevation, &Elevation, sizeof(Elevation), &cbSize)) {
+            fRet = Elevation.TokenIsElevated;
+        }
+    }
+    if (hToken) {
+        CloseHandle(hToken);
+    }
+    return fRet;
+}
 
 int main()
 {
     std::cout << "[+] Windows 10 Activator" << std::endl;
+
+    if (!IsElevated())
+    {
+        std::cout << "[!] Please restart with administrator permissions" << std::endl;
+        system("pause");
+        exit(134);
+    }
+
     std::cout << "\n[+] Select windows version:" << std::endl;
 
     int idx = 1;
